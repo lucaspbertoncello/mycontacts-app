@@ -11,13 +11,16 @@ export default styled.input`
   padding: 0 16px;
   font-size: 16px;
   transition: border-color 0.2s ease-in;
+  appearance: none !important;
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.primary.main};
   }
 
-  ${({ theme, error }) => error && css`
-    color: ${theme.colors.danger.main};
-    border-color: ${({ theme }) => theme.colors.danger.main} !important;
-  `}
+  ${({ theme, error }) =>
+    error &&
+    css`
+      color: ${theme.colors.danger.main};
+      border-color: ${({ theme }) => theme.colors.danger.main} !important;
+    `}
 `;
