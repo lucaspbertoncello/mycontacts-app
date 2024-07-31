@@ -1,82 +1,70 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 
-import isEmailValid from "../../utils/isEmailValid";
-
 import { Form, ButtonContainer } from "./styles";
+
+import isEmailValid from "../../utils/isEmailValid";
+import useErrors from "../../hooks/useErrors";
 
 import FormGroup from "../FormGroup";
 import Input from "../Input";
 import Select from "../Select";
 import Button from "../Button";
 
-export default function ContactForm ({ buttonLabel }) {
+import PropTypes from "prop-types";
+
+export default function ContactForm({ buttonLabel }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [category, setCategory] = useState("");
-  const [errors, setErrors] = useState([]);
 
-  function handleNameChange (e) {
+  const { setError, removeError, getErrorMessageByFieldName } = useErrors();
+
+  function handleNameChange(e) {
     setName(e.target.value);
 
     if (!e.target.value) {
-      setErrors((prevState) => [
-        ...prevState,
-        {field: "name", message: "Nome é obrigatório"}
-      ]);
+      setError("name", "Nome é obrigatório");
     } else {
-      setErrors((prevState) => prevState.filter(
-        (error) => error.field !== "name"
-      ));
+      removeError("name");
     }
   }
 
-  function handleEmailChange (e) {
+  function handleEmailChange(e) {
     setEmail(e.target.value);
 
     if (e.target.value && !isEmailValid(e.target.value)) {
-      const errorAlreadyExists = errors.find((error) => error.field === "email");
-
-      if(errorAlreadyExists) {
-        return;
-      }
-
-      setErrors((prevState) => [
-        ...prevState,
-        {field: "email", message: "Digite um e-mail válido"}
-      ]);
+      setError("email", "E-mail inválido");
     } else {
-      setErrors((prevState) => prevState.filter(
-        (error) => error.field !== "email"
-      ));
+      removeError("email");
     }
   }
 
-  console.log(errors);
-
-
-  function handleSubmit (e) {
+  function handleSubmit(e) {
     e.preventDefault();
 
     console.log({
-      name, email, phone, category
+      name,
+      email,
+      phone,
+      category,
     });
   }
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormGroup>
+      <FormGroup error={getErrorMessageByFieldName("name")}>
         <Input
-          name="name"
+          error={getErrorMessageByFieldName("name")}
           placeholder="Nome"
           value={name}
           onChange={handleNameChange}
         />
       </FormGroup>
 
-      <FormGroup>
+      <FormGroup error={getErrorMessageByFieldName("email")}>
         <Input
+          error={getErrorMessageByFieldName("email")}
           placeholder="E-mail"
           value={email}
           onChange={handleEmailChange}
@@ -92,10 +80,7 @@ export default function ContactForm ({ buttonLabel }) {
       </FormGroup>
 
       <FormGroup>
-        <Select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
+        <Select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">Categoria</option>
           <option value="Instagram">Instagram</option>
           <option value="Facebook">Facebook</option>
